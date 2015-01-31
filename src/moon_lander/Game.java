@@ -108,10 +108,10 @@ public class Game {
         
         // Checks where the player rocket is. Is it still in the space or is it landed or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing area.
-        if(playerRocket.position.y + playerRocket.rocketImgHeight - 10 > landingArea.y)
+        if(playerRocket.position.y + playerRocket.getDimensions().getHeight() - 10 > landingArea.y)
         {
             // Here we check if the rocket is over landing area.
-            if((playerRocket.position.x > landingArea.x) && (playerRocket.position.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket.rocketImgWidth))
+            if((playerRocket.position.x > landingArea.x) && (playerRocket.position.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket.getDimensions().getWidth()))
             {
                 // Here we check if the rocket speed isn't too high.
                 if(playerRocket.getVelocity().getY() <= playerRocket.topLandingSpeed)

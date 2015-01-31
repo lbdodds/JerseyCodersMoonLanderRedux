@@ -1,8 +1,10 @@
 package moon_lander;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -80,13 +82,9 @@ public class PlayerRocket {
     private BufferedImage rocketFireImg;
     
     /**
-     * Width of rocket.
+     * The width and height of the Rocket
      */
-    public int rocketImgWidth;
-    /**
-     * Height of rocket.
-     */
-    public int rocketImgHeight;
+    private Dimension dimensions;
     
     
     public PlayerRocket()
@@ -95,7 +93,7 @@ public class PlayerRocket {
         LoadContent();
         
         // Now that we have rocketImgWidth we set starting x coordinate.
-        position.x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
     }
     
     
@@ -108,6 +106,7 @@ public class PlayerRocket {
         topLandingSpeed = 5;
         position = new Point(0, 10);
         velocity = new Vector2();
+        dimensions = new Dimension();
 
         ResetPlayer();
     }
@@ -118,8 +117,7 @@ public class PlayerRocket {
         {
             URL rocketImgUrl = this.getClass().getResource("/moon_lander/resources/images/rocket.png");
             rocketImg = ImageIO.read(rocketImgUrl);
-            rocketImgWidth = rocketImg.getWidth();
-            rocketImgHeight = rocketImg.getHeight();
+            dimensions.setSize(rocketImg.getWidth(), rocketImg.getHeight());
             
             URL rocketLandedImgUrl = this.getClass().getResource("/moon_lander/resources/images/rocket_landed.png");
             rocketLandedImg = ImageIO.read(rocketLandedImgUrl);
@@ -143,7 +141,7 @@ public class PlayerRocket {
         landed = false;
         crashed = false;
         
-        position.x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
         position.y = 10;
         
         getVelocity().set(0, 0);
@@ -190,7 +188,7 @@ public class PlayerRocket {
         // If the rocket is crashed.
         else if(crashed)
         {
-            g2d.drawImage(rocketCrashedImg, position.x, position.y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
+            g2d.drawImage(rocketCrashedImg, position.x, position.y + (int)dimensions.getHeight() - rocketCrashedImg.getHeight(), null);
         }
         // If the rocket is still in the space.
         else
@@ -208,6 +206,10 @@ public class PlayerRocket {
 	 */
 	public Vector2 getVelocity() {
 		return velocity;
+	}
+	
+	public Dimension getDimensions() {
+		return dimensions;
 	}
     
 }
