@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import moon_lander.utility.Vector2;
+
 /**
  * The space rocket with which player will have to land.
  * 
@@ -56,13 +58,9 @@ public class PlayerRocket {
     public int topLandingSpeed;
     
     /**
-     * How fast and to which direction rocket is moving on x coordinate?
+     * The velocity of the rocket in two-dimensional space
      */
-    private int speedX;
-    /**
-     * How fast and to which direction rocket is moving on y coordinate?
-     */
-    public int speedY;
+    private Vector2 velocity;
             
     /**
      * Image of the rocket in air.
@@ -109,6 +107,7 @@ public class PlayerRocket {
         
         topLandingSpeed = 5;
         position = new Point(0, 10);
+        velocity = new Vector2();
 
         ResetPlayer();
     }
@@ -147,8 +146,7 @@ public class PlayerRocket {
         position.x = random.nextInt(Framework.frameWidth - rocketImgWidth);
         position.y = 10;
         
-        speedX = 0;
-        speedY = 0;
+        getVelocity().set(0, 0);
     }
     
     
@@ -159,24 +157,24 @@ public class PlayerRocket {
     {
         // Calculating speed for moving up or down.
         if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-            speedY -= speedAccelerating;
+            getVelocity().add(0, -speedAccelerating);
         else
-            speedY += speedStopping;
+            getVelocity().add(0, speedStopping);
         
         // Calculating speed for moving or stopping to the left.
         if(Canvas.keyboardKeyState(KeyEvent.VK_A))
-            speedX -= speedAccelerating;
-        else if(speedX < 0)
-            speedX += speedStopping;
+            getVelocity().add(-speedAccelerating, 0);
+        else if(getVelocity().getX() < 0)
+            getVelocity().add(speedStopping, 0);
         
         // Calculating speed for moving or stopping to the right.
         if(Canvas.keyboardKeyState(KeyEvent.VK_D))
-            speedX += speedAccelerating;
-        else if(speedX > 0)
-            speedX -= speedStopping;
+            getVelocity().add(+speedAccelerating, 0);
+        else if(getVelocity().getX() > 0)
+            getVelocity().add(-speedStopping, 0);
         
         // Moves the rocket.
-        position.translate(speedX, speedY);
+        position.translate((int)getVelocity().getX(), (int)getVelocity().getY());
     }
     
     public void Draw(Graphics2D g2d)
@@ -203,5 +201,13 @@ public class PlayerRocket {
             g2d.drawImage(rocketImg, position.x, position.y, null);
         }
     }
+
+
+	/**
+	 * @return the velocity
+	 */
+	public Vector2 getVelocity() {
+		return velocity;
+	}
     
 }

@@ -114,7 +114,7 @@ public class Game {
             if((playerRocket.position.x > landingArea.x) && (playerRocket.position.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket.rocketImgWidth))
             {
                 // Here we check if the rocket speed isn't too high.
-                if(playerRocket.speedY <= playerRocket.topLandingSpeed)
+                if(playerRocket.getVelocity().getY() <= playerRocket.topLandingSpeed)
                     playerRocket.landed = true;
                 else
                     playerRocket.crashed = true;
