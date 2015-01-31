@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import moon_lander.utility.Box2;
 import moon_lander.utility.Vector2;
 
 /**
@@ -86,6 +87,11 @@ public class PlayerRocket {
      */
     private Dimension dimensions;
     
+    /**
+     * The box that contains the rocket, useful for doing intersects
+     */
+    private Box2 boundingBox;
+    
     
     public PlayerRocket()
     {
@@ -94,6 +100,8 @@ public class PlayerRocket {
         
         // Now that we have rocketImgWidth we set starting x coordinate.
         position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     
@@ -107,6 +115,7 @@ public class PlayerRocket {
         position = new Point(0, 10);
         velocity = new Vector2();
         dimensions = new Dimension();
+        boundingBox = new Box2(position, dimensions);
 
         ResetPlayer();
     }
@@ -143,8 +152,9 @@ public class PlayerRocket {
         
         position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
         position.y = 10;
-        
         getVelocity().set(0, 0);
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     
@@ -173,6 +183,9 @@ public class PlayerRocket {
         
         // Moves the rocket.
         position.translate((int)getVelocity().getX(), (int)getVelocity().getY());
+        
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     public void Draw(Graphics2D g2d)
@@ -188,16 +201,21 @@ public class PlayerRocket {
         // If the rocket is crashed.
         else if(crashed)
         {
-            g2d.drawImage(rocketCrashedImg, position.x, position.y + (int)dimensions.getHeight() - rocketCrashedImg.getHeight(), null);
+            g2d.drawImage(rocketCrashedImg, position.x, boundingBox.bottom() - rocketCrashedImg.getHeight(), null);
         }
         // If the rocket is still in the space.
         else
         {
             // If player hold down a W key we draw rocket fire.
             if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-                g2d.drawImage(rocketFireImg, position.x + 12, position.y + 66, null);
+                g2d.drawImage(rocketFireImg, boundingBox.left() + 12, boundingBox.bottom() - 10, null);
             g2d.drawImage(rocketImg, position.x, position.y, null);
         }
+
+    }
+    
+    public Box2 getBoundingBox() {
+    	return boundingBox;
     }
 
 
