@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import moon_lander.utility.Box2;
 
 /**
  * Actual game.
@@ -105,16 +108,17 @@ public class Game {
     {
         // Move the rocket
         playerRocket.Update();
+        Box2 playerBox = playerRocket.getBoundingBox();
         
         // Checks where the player rocket is. Is it still in the space or is it landed or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing area.
-        if(playerRocket.y + playerRocket.rocketImgHeight - 10 > landingArea.y)
+        if(playerBox.bottom() - 10 > landingArea.y)
         {
             // Here we check if the rocket is over landing area.
-            if((playerRocket.x > landingArea.x) && (playerRocket.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket.rocketImgWidth))
+            if((playerBox.left() > landingArea.x) && (playerBox.right() < landingArea.x + landingArea.landingAreaImgWidth))
             {
                 // Here we check if the rocket speed isn't too high.
-                if(playerRocket.speedY <= playerRocket.topLandingSpeed)
+                if(playerRocket.getVelocity().getY() <= playerRocket.topLandingSpeed)
                     playerRocket.landed = true;
                 else
                     playerRocket.crashed = true;

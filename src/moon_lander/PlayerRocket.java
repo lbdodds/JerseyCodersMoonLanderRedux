@@ -1,7 +1,10 @@
 package moon_lander;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -9,7 +12,11 @@ import java.net.URL;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import moon_lander.utility.Box2;
+import moon_lander.utility.Vector2;
 
 /**
  * The space rocket with which player will have to land.
@@ -25,13 +32,9 @@ public class PlayerRocket {
     private Random random;
  
     /**
-     * X coordinate of the rocket.
+     * The coordinates of the rocket
      */
-    public int x;
-    /**
-     * Y coordinate of the rocket.
-     */
-    public int y;
+    Point position;
     
     /**
      * Is rocket landed?
@@ -58,13 +61,9 @@ public class PlayerRocket {
     public int topLandingSpeed;
     
     /**
-     * How fast and to which direction rocket is moving on x coordinate?
+     * The velocity of the rocket in two-dimensional space
      */
-    private int speedX;
-    /**
-     * How fast and to which direction rocket is moving on y coordinate?
-     */
-    public int speedY;
+    private Vector2 velocity;
             
     /**
      * Image of the rocket in air.
@@ -84,13 +83,14 @@ public class PlayerRocket {
     private BufferedImage rocketFireImg;
     
     /**
-     * Width of rocket.
+     * The width and height of the Rocket
      */
-    public int rocketImgWidth;
+    private Dimension dimensions;
+    
     /**
-     * Height of rocket.
+     * The box that contains the rocket, useful for doing intersects
      */
-    public int rocketImgHeight;
+    private Box2 boundingBox;
     
     
     public PlayerRocket()
@@ -99,20 +99,25 @@ public class PlayerRocket {
         LoadContent();
         
         // Now that we have rocketImgWidth we set starting x coordinate.
-        x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     
     private void Initialize()
     {
         random = new Random();
-        
-        ResetPlayer();
-        
         speedAccelerating = 2;
         speedStopping = 1;
         
         topLandingSpeed = 5;
+        position = new Point(0, 10);
+        velocity = new Vector2();
+        dimensions = new Dimension();
+        boundingBox = new Box2(position, dimensions);
+
+        ResetPlayer();
     }
     
     private void LoadContent()
@@ -121,8 +126,7 @@ public class PlayerRocket {
         {
             URL rocketImgUrl = this.getClass().getResource("/moon_lander/resources/images/rocket.png");
             rocketImg = ImageIO.read(rocketImgUrl);
-            rocketImgWidth = rocketImg.getWidth();
-            rocketImgHeight = rocketImg.getHeight();
+            dimensions.setSize(rocketImg.getWidth(), rocketImg.getHeight());
             
             URL rocketLandedImgUrl = this.getClass().getResource("/moon_lander/resources/images/rocket_landed.png");
             rocketLandedImg = ImageIO.read(rocketLandedImgUrl);
@@ -146,11 +150,11 @@ public class PlayerRocket {
         landed = false;
         crashed = false;
         
-        x = random.nextInt(Framework.frameWidth - rocketImgWidth);
-        y = 10;
-        
-        speedX = 0;
-        speedY = 0;
+        position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
+        position.y = 10;
+        getVelocity().set(0, 0);
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     
@@ -161,50 +165,69 @@ public class PlayerRocket {
     {
         // Calculating speed for moving up or down.
         if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-            speedY -= speedAccelerating;
+            getVelocity().add(0, -speedAccelerating);
         else
-            speedY += speedStopping;
+            getVelocity().add(0, speedStopping);
         
         // Calculating speed for moving or stopping to the left.
         if(Canvas.keyboardKeyState(KeyEvent.VK_A))
-            speedX -= speedAccelerating;
-        else if(speedX < 0)
-            speedX += speedStopping;
+            getVelocity().add(-speedAccelerating, 0);
+        else if(getVelocity().getX() < 0)
+            getVelocity().add(speedStopping, 0);
         
         // Calculating speed for moving or stopping to the right.
         if(Canvas.keyboardKeyState(KeyEvent.VK_D))
-            speedX += speedAccelerating;
-        else if(speedX > 0)
-            speedX -= speedStopping;
+            getVelocity().add(+speedAccelerating, 0);
+        else if(getVelocity().getX() > 0)
+            getVelocity().add(-speedStopping, 0);
         
         // Moves the rocket.
-        x += speedX;
-        y += speedY;
+        position.translate((int)getVelocity().getX(), (int)getVelocity().getY());
+        
+        boundingBox.setLocation(position);
+        boundingBox.setSize(dimensions);
     }
     
     public void Draw(Graphics2D g2d)
     {
         g2d.setColor(Color.white);
-        g2d.drawString("Rocket coordinates: " + x + " : " + y, 5, 15);
+        g2d.drawString("Rocket coordinates: " + position.x + " : " + position.y, 5, 15);
         
         // If the rocket is landed.
         if(landed)
         {
-            g2d.drawImage(rocketLandedImg, x, y, null);
+            g2d.drawImage(rocketLandedImg, position.x, position.y, null);
         }
         // If the rocket is crashed.
         else if(crashed)
         {
-            g2d.drawImage(rocketCrashedImg, x, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
+            g2d.drawImage(rocketCrashedImg, position.x, boundingBox.bottom() - rocketCrashedImg.getHeight(), null);
         }
         // If the rocket is still in the space.
         else
         {
             // If player hold down a W key we draw rocket fire.
             if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-                g2d.drawImage(rocketFireImg, x + 12, y + 66, null);
-            g2d.drawImage(rocketImg, x, y, null);
+                g2d.drawImage(rocketFireImg, boundingBox.left() + 12, boundingBox.bottom() - 10, null);
+            g2d.drawImage(rocketImg, position.x, position.y, null);
         }
+
     }
+    
+    public Box2 getBoundingBox() {
+    	return boundingBox;
+    }
+
+
+	/**
+	 * @return the velocity
+	 */
+	public Vector2 getVelocity() {
+		return velocity;
+	}
+	
+	public Dimension getDimensions() {
+		return dimensions;
+	}
     
 }
