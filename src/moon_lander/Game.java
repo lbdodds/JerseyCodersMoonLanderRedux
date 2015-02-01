@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import moon_lander.utility.Box2;
+import moon_lander.utility.ScreenLogger;
 
 /**
  * Actual game.
@@ -141,8 +142,9 @@ public class Game {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
         
         landingArea.Draw(g2d);
-        
         playerRocket.Draw(g2d);
+        
+        ScreenLogger.flush(g2d);
     }
     
     

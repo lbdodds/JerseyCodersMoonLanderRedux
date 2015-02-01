@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import moon_lander.utility.Box2;
+import moon_lander.utility.ScreenLogger;
 import moon_lander.utility.Vector2;
 
 /**
@@ -190,8 +191,8 @@ public class PlayerRocket {
     
     public void Draw(Graphics2D g2d)
     {
-        g2d.setColor(Color.white);
-        g2d.drawString("Rocket coordinates: " + position.x + " : " + position.y, 5, 15);
+    	ScreenLogger.add("Rocket coordinates: " + position.x + ", " + position.y);
+    	ScreenLogger.add("Rocket velocity: " + velocity.getX() + ",  " + velocity.getY());
         
         // If the rocket is landed.
         if(landed)
