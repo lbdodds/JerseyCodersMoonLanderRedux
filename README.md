@@ -44,7 +44,9 @@ I wanted to introduce a bounding box to the `PlayerRocket` in order to open up t
 
 As I talked about in the previous section, a Bounding Box is something that I feel is pretty important. They're helpful for determining collisions and sides. So, I implemented a `Box2` for this purpose called `boundingBox`. The `boundingBox` needed to be kept up to date whenever a change is made to the location, so I made sure to put that in, and then replaced where the `position` was called for the purposes of determining the edges of the `PlayerRocket` with a call to the `boundingBox` instead.
 
+### 2. Screen Logger
 
+In `PlayerRocket` there was a part of the code that wrote out some debug information to the screen. Moving onto the future, I assumed that I may be wanting to write more things to the screen and I didn't want to bother having to deal with remembering the exact placement of what I'd already put on the screen. So, the `ScreenLogger` class does the tracking for me and at the end of the `Draw` function on `Game`, it flushes the `ScreenLogger` to the screen.
 
 ## Going Forward
 
