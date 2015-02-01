@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import moon_lander.utility.Angle;
 import moon_lander.utility.Box2;
 import moon_lander.utility.ScreenLogger;
 import moon_lander.utility.Vector2;
@@ -88,6 +90,8 @@ public class PlayerRocket {
      */
     private Dimension dimensions;
     
+    private Angle angle;
+    
     /**
      * The box that contains the rocket, useful for doing intersects
      */
@@ -113,6 +117,7 @@ public class PlayerRocket {
         speedStopping = 1;
         
         topLandingSpeed = 5;
+        angle = new Angle();
         position = new Point(0, 10);
         velocity = new Vector2();
         dimensions = new Dimension();
@@ -169,6 +174,14 @@ public class PlayerRocket {
             getVelocity().add(0, -speedAccelerating);
         else
             getVelocity().add(0, speedStopping);
+
+        if(Canvas.keyboardKeyState(KeyEvent.VK_Q)) {
+        	angle.increment(-5);
+        }
+        
+        if(Canvas.keyboardKeyState(KeyEvent.VK_E)) {
+        	angle.increment(+5);
+        }
         
         // Calculating speed for moving or stopping to the left.
         if(Canvas.keyboardKeyState(KeyEvent.VK_A))
@@ -193,6 +206,7 @@ public class PlayerRocket {
     {
     	ScreenLogger.add("Rocket coordinates: " + position.x + ", " + position.y);
     	ScreenLogger.add("Rocket velocity: " + velocity.getX() + ",  " + velocity.getY());
+    	ScreenLogger.add("Rocket angle: " + angle.getAngle());
         
         // If the rocket is landed.
         if(landed)
@@ -207,10 +221,19 @@ public class PlayerRocket {
         // If the rocket is still in the space.
         else
         {
+        	
+        	// Store the old transform to revert to later
+        	AffineTransform old = g2d.getTransform();
+        	
+        	// Rotate by the angle around the center point of the sprite
+        	g2d.rotate(angle.toRadians(), boundingBox.getCenterX(), boundingBox.getCenterY());
             // If player hold down a W key we draw rocket fire.
             if(Canvas.keyboardKeyState(KeyEvent.VK_W))
                 g2d.drawImage(rocketFireImg, boundingBox.left() + 12, boundingBox.bottom() - 10, null);
             g2d.drawImage(rocketImg, position.x, position.y, null);
+            
+            // Revert the transform
+            g2d.setTransform(old);
         }
 
     }
