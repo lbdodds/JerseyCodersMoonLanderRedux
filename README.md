@@ -48,6 +48,24 @@ As I talked about in the previous section, a Bounding Box is something that I fe
 
 In `PlayerRocket` there was a part of the code that wrote out some debug information to the screen. Moving onto the future, I assumed that I may be wanting to write more things to the screen and I didn't want to bother having to deal with remembering the exact placement of what I'd already put on the screen. So, the `ScreenLogger` class does the tracking for me and at the end of the `Draw` function on `Game`, it flushes the `ScreenLogger` to the screen.
 
+### 3. Angle
+
+As part of my plans for changing the game, I decided that it was necessary to implement a way to rotate the `PlayerRocket`. So, I created the `Angle` class for this purpose.
+
+#### 3.1 Angle Class
+
+When doing things with angles, it is common to think about doing things in degrees. However, most actual work with angles is doing radians instead. That often makes things a bit awkward to diagnose if you forget to convert your angle from degrees to radians when you're doing the proper math with angles, as angles are important to trigonometry, which is important to a lot of game math.
+
+The `Angle` class is designed to deal with working with angles in this context. It starts with the `tan`, `cos` and `sin` methods that map to their respective trigonometry functions. Moving on after that, I needed to make sure that there was an easy way to get the angle in radians out, so I implemented the `toRadians` method and that was the `Angle` class finished.
+
+#### 3.2 Implementing the Angle Class
+
+I wanted the player to be able to rotate their rocket. This keys in to future developments. So, I gave the `PlayerRocket` an `Angle` attribute by the name of `angle`. I added it to the `Initialize` method to make sure that it's instantiated when the `PlayerRocket` is made and then moved on to making sure that the player was able to rotate the rocket itself.
+
+For now, I bound the angular movement of the rocket to Q and E. Hitting either of these altered the angle o the rocket by 5 degrees, so that it wasn't a slow turn. The next part was actually apply the angle, which meant transforming the plane to be drawn on, and then reverting it back to its original transform.
+
+This meant setting a transform to rotate the drawing canvas around the center point of the rocket. If the rotation origin is not at the center point, then we start to rotate around {0,0} which just creates some funky behaviour that's not really wanted.
+
 ## Going Forward
 
 Now that there has been some refactoring implemented into the game code, I have decided to start altering how the gameplay works. I'm not exactly sure where I want to take the game, but the first thing I'm interested in achieving is allowing the ship to reposition its angle.
