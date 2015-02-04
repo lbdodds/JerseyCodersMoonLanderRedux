@@ -40,7 +40,7 @@ public class Angle {
 		}
 		
 		if(angle < 0) {
-			angle = 360 - angle;
+			angle = 360 + angle;
 		}
 	}
 	
