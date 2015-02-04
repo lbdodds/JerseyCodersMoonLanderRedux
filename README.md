@@ -66,6 +66,10 @@ For now, I bound the angular movement of the rocket to Q and E. Hitting either o
 
 This meant setting a transform to rotate the drawing canvas around the center point of the rocket. If the rotation origin is not at the center point, then we start to rotate around {0,0} which just creates some funky behaviour that's not really wanted.
 
+### 3.A Angle Bug Fix
+
+While I was starting on the next stage of work, I noticed a strange behavior when the rocket was rotated to the left. Instead of going from 0 to 355 like it should, it was jumping from 0 to 365, which meant that the angle was making the rocket appear to jump an angle to the right. This was due attempting to do `angle = 360 - angle` in order to wrap the angle around. As the angle was -5, 360 - -5 became 365. So, I fixed this by changing it to `angle = 360 + angle`.
+
 ## Going Forward
 
 Now that there has been some refactoring implemented into the game code, I have decided to start altering how the gameplay works. I'm not exactly sure where I want to take the game, but the first thing I'm interested in achieving is allowing the ship to reposition its angle.
