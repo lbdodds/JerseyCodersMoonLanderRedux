@@ -93,6 +93,11 @@ public class PlayerRocket {
     private Angle angle;
     
     /**
+     * The Rocket's speed to be translated into velocity
+     */
+    private double speed;
+    
+    /**
      * The box that contains the rocket, useful for doing intersects
      */
     private Box2 boundingBox;
@@ -159,6 +164,7 @@ public class PlayerRocket {
         position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
         position.y = 10;
         getVelocity().set(0, 0);
+        speed = 0.0;
         boundingBox.setLocation(position);
         boundingBox.setSize(dimensions);
     }
@@ -169,31 +175,23 @@ public class PlayerRocket {
      */
     public void Update()
     {
+    	speed *= 0.5;
         // Calculating speed for moving up or down.
         if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-            getVelocity().add(0, -speedAccelerating);
-        else
-            getVelocity().add(0, speedStopping);
+        	speed += speedAccelerating;
 
-        if(Canvas.keyboardKeyState(KeyEvent.VK_Q)) {
+        if(Canvas.keyboardKeyState(KeyEvent.VK_A)) {
         	angle.increment(-5);
         }
         
-        if(Canvas.keyboardKeyState(KeyEvent.VK_E)) {
+        if(Canvas.keyboardKeyState(KeyEvent.VK_D)) {
         	angle.increment(+5);
         }
         
-        // Calculating speed for moving or stopping to the left.
-        if(Canvas.keyboardKeyState(KeyEvent.VK_A))
-            getVelocity().add(-speedAccelerating, 0);
-        else if(getVelocity().getX() < 0)
-            getVelocity().add(speedStopping, 0);
-        
-        // Calculating speed for moving or stopping to the right.
-        if(Canvas.keyboardKeyState(KeyEvent.VK_D))
-            getVelocity().add(+speedAccelerating, 0);
-        else if(getVelocity().getX() > 0)
-            getVelocity().add(-speedStopping, 0);
+        velocity.add(
+    		(int)(speed * angle.sin()), 
+    		-(int)(speed * angle.cos())
+		);
         
         // Moves the rocket.
         position.translate((int)getVelocity().getX(), (int)getVelocity().getY());
@@ -207,6 +205,7 @@ public class PlayerRocket {
     	ScreenLogger.add("Rocket coordinates: " + position.x + ", " + position.y);
     	ScreenLogger.add("Rocket velocity: " + velocity.getX() + ",  " + velocity.getY());
     	ScreenLogger.add("Rocket angle: " + angle.getAngle());
+    	ScreenLogger.add("Rocket speed: " + speed);
         
         // If the rocket is landed.
         if(landed)
@@ -227,7 +226,7 @@ public class PlayerRocket {
         	
         	// Rotate by the angle around the center point of the sprite
         	g2d.rotate(angle.toRadians(), boundingBox.getCenterX(), boundingBox.getCenterY());
-            // If player hold down a W key we draw rocket fire.
+            // If player holds down the W key we draw rocket fire.
             if(Canvas.keyboardKeyState(KeyEvent.VK_W))
                 g2d.drawImage(rocketFireImg, boundingBox.left() + 12, boundingBox.bottom() - 10, null);
             g2d.drawImage(rocketImg, position.x, position.y, null);
