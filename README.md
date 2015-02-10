@@ -70,6 +70,18 @@ This meant setting a transform to rotate the drawing canvas around the center po
 
 While I was starting on the next stage of work, I noticed a strange behavior when the rocket was rotated to the left. Instead of going from 0 to 355 like it should, it was jumping from 0 to 365, which meant that the angle was making the rocket appear to jump an angle to the right. This was due attempting to do `angle = 360 - angle` in order to wrap the angle around. As the angle was -5, 360 - -5 became 365. So, I fixed this by changing it to `angle = 360 + angle`.
 
+#### 4. Directional Velocity
+
+As I move forward on my goal to completely overhaul the gameplay aspects of this game, I thought it was necessary to implemented directional velocity rather than just a move along the X or Y axis, especially as I had just implemented the `Angle` class. Why would I be able to rotate and then not allow my rocket to move in the direction it's pointing?
+
+To start with, it was clear that simply adding to the velocity was not going to work. Due to the fact that we need to run some trigonometry functions on the speed of the rocket, I created a `double speed` variable on `PlayerRocket` to track the exact speed of the rocket and initialized it in one of the initialization functions.
+
+At the start of update, I reduce the speed by half in order to simulate some form of friction. This isn't actually "realistic" for space, but I didn't want my rocket flinging off to the side just because I held down A for too long. Moving on, I replaced the W listener to increase the speed and removed where it reduced the speed if W was not pressed (that's handled by my faux friction). The only thing that could affect the speed should be pressing the W key, as forward is the only direction for the rocket.
+
+After adding to the speed, I needed to add the directional velocity to the velocity itself. This means that I had to  
+
+Due to the fact that I am now working with directional velocity, I no longer needed to manually change the X position with the A and D keys. I remove the logic from those keys and decided that it was better if they modified the angle instead, so I switched the angle keys from Q and E to A and D.
+
 ## Going Forward
 
 Now that there has been some refactoring implemented into the game code, I have decided to start altering how the gameplay works. I'm not exactly sure where I want to take the game, but the first thing I'm interested in achieving is allowing the ship to reposition its angle.
