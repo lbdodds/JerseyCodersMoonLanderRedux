@@ -102,6 +102,23 @@ public class Entity {
 	 * The entity logic method
 	 */
 	public void Update() {
+
+		if(this.boundingBox.left() > Framework.frameWidth) {
+			this.position.setLocation(0 - this.boundingBox.width, this.position.y);
+		}
+		
+		if(this.boundingBox.top() > Framework.frameHeight) {
+			this.position.setLocation(this.position.x, 0 - this.boundingBox.height);
+		}
+		
+		if(this.boundingBox.right() < 0) {
+			this.position.setLocation(Framework.frameWidth, this.position.y);
+		}
+		
+		if(this.boundingBox.bottom() < 0) {
+			this.position.setLocation(this.position.x, Framework.frameHeight);
+		}
+		
 		velocity.add(
     		(acceleration * angle.sin()), 
     		-(acceleration * angle.cos())
