@@ -27,17 +27,7 @@ import moon_lander.utility.Vector2;
  * @author www.gametutorial.net
  */
 
-public class PlayerRocket {
-    
-    /**
-     * We use this to generate a random number for starting x coordinate of the rocket.
-     */
-    private Random random;
- 
-    /**
-     * The coordinates of the rocket
-     */
-    Point position;
+public class PlayerRocket extends Entity {
     
     /**
      * Is rocket landed?
@@ -53,21 +43,12 @@ public class PlayerRocket {
      * Accelerating speed of the rocket.
      */
     private int speedAccelerating;
-    /**
-     * Stopping/Falling speed of the rocket. Falling speed because, the gravity pulls the rocket down to the moon.
-     */
-    private int speedStopping;
     
     /**
      * Maximum speed that rocket can have without having a crash when landing.
      */
     public int topLandingSpeed;
     
-    /**
-     * The velocity of the rocket in two-dimensional space
-     */
-    private Vector2 velocity;
-            
     /**
      * Image of the rocket in air.
      */
@@ -85,27 +66,14 @@ public class PlayerRocket {
      */
     private BufferedImage rocketFireImg;
     
-    /**
-     * The width and height of the Rocket
-     */
-    private Dimension dimensions;
-    
-    private Angle angle;
-    
-    /**
-     * The Rocket's speed to be translated into velocity
-     */
-    private double speed;
-    
-    /**
-     * The box that contains the rocket, useful for doing intersects
-     */
-    private Box2 boundingBox;
-    
     
     public PlayerRocket()
     {
-        Initialize();
+    	super();
+    	
+        speedAccelerating = 2;
+        topLandingSpeed = 5;
+    	
         LoadContent();
         
         // Now that we have rocketImgWidth we set starting x coordinate.
@@ -114,22 +82,6 @@ public class PlayerRocket {
         boundingBox.setSize(dimensions);
     }
     
-    
-    private void Initialize()
-    {
-        random = new Random();
-        speedAccelerating = 2;
-        speedStopping = 1;
-        
-        topLandingSpeed = 5;
-        angle = new Angle();
-        position = new Point(0, 10);
-        velocity = new Vector2();
-        dimensions = new Dimension();
-        boundingBox = new Box2(position, dimensions);
-
-        ResetPlayer();
-    }
     
     private void LoadContent()
     {
@@ -163,8 +115,8 @@ public class PlayerRocket {
         
         position.x = random.nextInt(Framework.frameWidth - (int)dimensions.getWidth());
         position.y = 10;
-        getVelocity().set(0, 0);
-        speed = 0.0;
+        acceleration = 0.0;
+        velocity.set(0, 0);
         boundingBox.setLocation(position);
         boundingBox.setSize(dimensions);
     }
@@ -175,10 +127,9 @@ public class PlayerRocket {
      */
     public void Update()
     {
-    	speed *= 0.5;
         // Calculating speed for moving up or down.
         if(Canvas.keyboardKeyState(KeyEvent.VK_W))
-        	speed += speedAccelerating;
+        	acceleration += speedAccelerating;
 
         if(Canvas.keyboardKeyState(KeyEvent.VK_A)) {
         	angle.increment(-5);
@@ -188,16 +139,7 @@ public class PlayerRocket {
         	angle.increment(+5);
         }
         
-        velocity.add(
-    		(int)(speed * angle.sin()), 
-    		-(int)(speed * angle.cos())
-		);
-        
-        // Moves the rocket.
-        position.translate((int)getVelocity().getX(), (int)getVelocity().getY());
-        
-        boundingBox.setLocation(position);
-        boundingBox.setSize(dimensions);
+        super.Update();
     }
     
     public void Draw(Graphics2D g2d)
@@ -205,7 +147,7 @@ public class PlayerRocket {
     	ScreenLogger.add("Rocket coordinates: " + position.x + ", " + position.y);
     	ScreenLogger.add("Rocket velocity: " + velocity.getX() + ",  " + velocity.getY());
     	ScreenLogger.add("Rocket angle: " + angle.getAngle());
-    	ScreenLogger.add("Rocket speed: " + speed);
+    	ScreenLogger.add("Rocket acceleration: " + acceleration);
         
         // If the rocket is landed.
         if(landed)
@@ -236,21 +178,4 @@ public class PlayerRocket {
         }
 
     }
-    
-    public Box2 getBoundingBox() {
-    	return boundingBox;
-    }
-
-
-	/**
-	 * @return the velocity
-	 */
-	public Vector2 getVelocity() {
-		return velocity;
-	}
-	
-	public Dimension getDimensions() {
-		return dimensions;
-	}
-    
 }
