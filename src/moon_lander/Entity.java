@@ -127,6 +127,10 @@ public class Entity {
 		g2d.setTransform(old);
 	}
 	
+	public Boolean intersects(Entity entity) {
+		return entity.boundingBox.intersects(this.boundingBox);
+	}
+	
 	public Point getPosition() {
 		return position;
 	}
