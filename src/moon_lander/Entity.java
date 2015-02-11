@@ -121,12 +121,6 @@ public class Entity {
 	 * @param g2d
 	 */
 	public void Draw(Graphics2D g2d) {
-    	ScreenLogger.add("Entity coordinates: " + position.x + ", " + position.y);
-    	ScreenLogger.add("Entity velocity: " + velocity.getX() + ",  " + velocity.getY());
-    	ScreenLogger.add("Entity angle: " + angle.getAngle());
-    	ScreenLogger.add("Entity speed: " + acceleration);
-		
-		
 		AffineTransform old = g2d.getTransform();
 		g2d.rotate(angle.toRadians(), boundingBox.getCenterX(), boundingBox.getCenterY());
 		g2d.drawImage(image, position.x, position.y, null);
