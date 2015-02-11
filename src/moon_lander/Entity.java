@@ -87,7 +87,7 @@ public class Entity {
 	/**
 	 * Loading the entity content
 	 */
-	public void LoadContent() {
+	private void LoadContent() {
 		try {
 			if(imageURL != null) {
 				URL url = this.getClass().getResource(imageURL);
