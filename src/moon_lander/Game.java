@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,9 @@ public class Game {
      * Landing area on which rocket will have to land.
      */
     private LandingArea landingArea;
+    
+    private ArrayList<Asteroid> asteroids;
+    private Asteroid asteroid;
     
     /**
      * Game background image.
@@ -69,6 +73,10 @@ public class Game {
     {
         playerRocket = new PlayerRocket();
         landingArea  = new LandingArea();
+        asteroids = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+        	asteroids.add(new Asteroid());
+        }
     }
     
     /**
@@ -108,8 +116,17 @@ public class Game {
     public void UpdateGame(long gameTime, Point mousePosition)
     {
         // Move the rocket
+    	for(Asteroid asteroid : asteroids) {
+    		asteroid.Update();
+
+            if(playerRocket.intersects(asteroid)) {
+            	playerRocket.crashed = true;
+            	Framework.gameState = Framework.GameState.GAMEOVER;
+            }
+    	}
         playerRocket.Update();
         Box2 playerBox = playerRocket.getBoundingBox();
+        
         
         // Checks where the player rocket is. Is it still in the space or is it landed or crashed?
         // First we check bottom y coordinate of the rocket if is it near the landing area.
@@ -141,6 +158,7 @@ public class Game {
     {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
         
+        asteroids.forEach((Asteroid asteroid) -> asteroid.Draw(g2d));
         landingArea.Draw(g2d);
         playerRocket.Draw(g2d);
         
