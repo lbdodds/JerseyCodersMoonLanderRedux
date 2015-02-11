@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 
 import moon_lander.utility.Angle;
 import moon_lander.utility.Box2;
-import moon_lander.utility.ScreenLogger;
 import moon_lander.utility.Vector2;
 
 public class Entity {
